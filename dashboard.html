@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Professional Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+    <header class="bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md px-6 py-4 flex items-center">
+        <img src="logo t.jpg" alt="Technova Hub Logo" class="w-14 h-14 md:w-16 md:h-16 rounded-full ring-2 ring-white/30 mr-4" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
+        <svg width="56" height="56" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" class="mr-4 flex-shrink-0" style="display:none">
+          <rect width="64" height="64" fill="#000" rx="8"/>
+          <text x="32" y="38" font-family="sans-serif" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle">TH</text>
+        </svg>
+        <div>
+            <h1 class="text-2xl font-bold">Technova Hub</h1>
+            <p class="text-sm text-white/80">Professional Operations Dashboard</p>
+        </div>
+        <nav class="ml-auto">
+            <a href="report_interface.html" class="text-white/90 font-semibold hover:text-white mr-4">Extractor</a>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Metrics Cards -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 uppercase tracking-wide">Total Extractions</p>
+                        <p class="text-2xl font-bold mt-1" id="totalCount">0</p>
+                    </div>
+                    <i class="fas fa-file-pdf text-3xl text-violet-600"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 uppercase tracking-wide">This Week</p>
+                        <p class="text-2xl font-bold mt-1" id="weekCount">0</p>
+                    </div>
+                    <i class="fas fa-calendar-week text-3xl text-indigo-600"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 uppercase tracking-wide">Avg Size</p>
+                        <p class="text-2xl font-bold mt-1" id="avgSize">—</p>
+                    </div>
+                    <i class="fas fa-weight text-3xl text-purple-600"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 uppercase tracking-wide">Success Rate</p>
+                        <p class="text-2xl font-bold mt-1" id="successRate">100%</p>
+                    </div>
+                    <i class="fas fa-check-circle text-3xl text-green-600"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Controls -->
+        <section class="bg-white rounded-lg shadow p-6 mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input type="text" id="searchInput" placeholder="Search filename..." class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                <select id="filterSelect" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500">
+                    <option value="">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                </select>
+            </div>
+            <div class="flex gap-2">
+                <button id="exportBtn" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition">
+                    <i class="fas fa-download mr-2"></i>Export CSV
+                </button>
+                <button id="clearHistory" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                    <i class="fas fa-trash mr-2"></i>Clear All
+                </button>
+            </div>
+        </section>
+
+        <!-- Table -->
+        <section class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Filename</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="px-6 py-4 bg-gray-50 flex items-center justify-between">
+                <p class="text-sm text-gray-700">
+                    Showing <span id="showingStart">0</span> to <span id="showingEnd">0</span> of <span id="totalRecords">0</span> results
+                </p>
+                <div class="flex gap-2">
+                    <button id="prevBtn" class="px-3 py-1 bg-white border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="nextBtn" class="px-3 py-1 bg-white border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50" disabled>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detail Modal -->
+        <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col">
+                <div class="px-6 py-4 border-b flex items-center justify-between">
+                    <h3 class="text-lg font-semibold">Extraction Details</h3>
+                    <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="flex-1 p-6 overflow-auto">
+                    <pre id="detailOutput" class="text-sm whitespace-pre-wrap bg-gray-50 rounded p-4"></pre>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            let extractions = [];
+            let filtered = [...extractions];
+            let page = 1;
+            const perPage = 10;
+
+            // Load data from API
+            async function loadData() {
+                try {
+                    const response = await fetch('http://localhost:5000/api/extractions');
+                    if (!response.ok) throw new Error('Failed to load data');
+                    const data = await response.json();
+                    extractions = data.extractions;
+                    filtered = [...extractions];
+                    renderTable();
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                }
+            }
+
+            // Load metrics from API
+            async function loadMetrics() {
+                try {
+                    const response = await fetch('http://localhost:5000/api/metrics');
+                    if (!response.ok) throw new Error('Failed to load metrics');
+                    const metrics = await response.json();
+                    document.getElementById('totalCount').textContent = metrics.total_extractions;
+                    document.getElementById('weekCount').textContent = metrics.this_week;
+                    document.getElementById('avgSize').textContent = metrics.avg_size;
+                    document.getElementById('successRate').textContent = metrics.success_rate;
+                } catch (error) {
+                    console.error('Error loading metrics:', error);
+                }
+            }
+
+            // Render table
+            function renderTable() {
+                const tbody = document.getElementById('tableBody');
+                tbody.innerHTML = '';
+                const start = (page - 1) * perPage;
+                const paginated = filtered.slice(start, start + perPage);
+                paginated.forEach((item, i) => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50';
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${start + i + 1}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.filename}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(item.extraction_date).toLocaleString()}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.file_size ? `${(item.file_size / 1024 / 1024).toFixed(1)} MB` : '—'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">${item.status}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button data-id="${item.id}" class="viewBtn text-violet-600 hover:text-violet-900 mr-3">View</button>
+                            <button data-id="${item.id}" class="deleteBtn text-red-600 hover:text-red-900">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                updatePagination();
+            }
+
+            function updatePagination() {
+                const total = filtered.length;
+                const start = Math.min((page - 1) * perPage + 1, total);
+                const end = Math.min(page * perPage, total);
+                document.getElementById('showingStart').textContent = total ? start : 0;
+                document.getElementById('showingEnd').textContent = end;
+                document.getElementById('totalRecords').textContent = total;
+                document.getElementById('prevBtn').disabled = page === 1;
+                document.getElementById('nextBtn').disabled = page * perPage >= total;
+            }
+
+            function filter() {
+                const term = document.getElementById('searchInput').value.toLowerCase();
+                const range = document.getElementById('filterSelect').value;
+                filtered = extractions.filter(item => {
+                    const match = item.filename.toLowerCase().includes(term);
+                    if (!range) return match;
+                    const date = new Date(item.extraction_date);
+                    const now = new Date();
+                    if (range === 'today') return match && date.toDateString() === now.toDateString();
+                    if (range === 'week') return match && (now - date) <= 7 * 24 * 60 * 60 * 1000;
+                    if (range === 'month') return match && (now - date) <= 30 * 24 * 60 * 60 * 1000;
+                    return match;
+                });
+                page = 1;
+                renderTable();
+            }
+
+            // Event listeners
+            document.getElementById('searchInput').addEventListener('input', filter);
+            document.getElementById('filterSelect').addEventListener('change', filter);
+            document.getElementById('prevBtn').addEventListener('click', () => { page--; renderTable(); });
+            document.getElementById('nextBtn').addEventListener('click', () => { page++; renderTable(); });
+
+            document.getElementById('tableBody').addEventListener('click', async e => {
+                const id = e.target.dataset.id;
+                if (e.target.classList.contains('viewBtn')) {
+                    try {
+                        const response = await fetch(`http://localhost:5000/api/extractions/${id}`);
+                        if (!response.ok) throw new Error('Failed to load details');
+                        const item = await response.json();
+                        document.getElementById('detailOutput').textContent = JSON.stringify(item.data, null, 2);
+                        document.getElementById('detailModal').classList.remove('hidden');
+                    } catch (error) {
+                        console.error('Error loading details:', error);
+                        alert('Failed to load extraction details');
+                    }
+                } else if (e.target.classList.contains('deleteBtn')) {
+                    if (confirm('Delete this record?')) {
+                        try {
+                            const response = await fetch(`http://localhost:5000/api/extractions/${id}`, {
+                                method: 'DELETE'
+                            });
+                            if (!response.ok) throw new Error('Failed to delete');
+                            await loadData(); // Reload data
+                        } catch (error) {
+                            console.error('Error deleting:', error);
+                            alert('Failed to delete record');
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('closeModal').addEventListener('click', () => {
+                document.getElementById('detailModal').classList.add('hidden');
+            });
+
+            document.getElementById('clearHistory').addEventListener('click', async () => {
+                if (confirm('Clear all history?')) {
+                    try {
+                        const response = await fetch('http://localhost:5000/api/extractions/clear', {
+                            method: 'DELETE'
+                        });
+                        if (!response.ok) throw new Error('Failed to clear history');
+                        await loadData(); // Reload data
+                    } catch (error) {
+                        console.error('Error clearing history:', error);
+                        alert('Failed to clear history');
+                    }
+                }
+            });
+
+            document.getElementById('exportBtn').addEventListener('click', async () => {
+                try {
+                    const search = document.getElementById('searchInput').value;
+                    const dateFilter = document.getElementById('filterSelect').value;
+                    const url = new URL('http://localhost:5000/api/export/csv');
+                    if (search) url.searchParams.append('search', search);
+                    if (dateFilter) url.searchParams.append('date_filter', dateFilter);
+                    
+                    window.open(url.toString(), '_blank');
+                } catch (error) {
+                    console.error('Error exporting:', error);
+                    alert('Failed to export data');
+                }
+            });
+
+            // Initial load
+            await loadMetrics();
+            await loadData();
+        });
+    </script>
+</body>
+</html>
