@@ -28,7 +28,7 @@ def home():
 # Database configuration
 # -------------------------------
 
-DB_NAME = "/tmp/extractions.db"
+DB_NAME = "extractions.db"
 SCHEMA_FILE = "database_schema.sql"
 
 def init_database():
