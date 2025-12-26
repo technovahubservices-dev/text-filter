@@ -219,3 +219,6 @@ def update_metrics():
 
 # Initialize DB at import time (Vercel safe)
 init_database()
+
+# Vercel serverless handler
+handler = app.wsgi_app
